@@ -9,52 +9,53 @@ steps:
 - checkout: self
   displayName: 'Checkout code from GitHub'
 
-# Step 2: Build Docker image for Django
+# Step 3: Build Docker image for Django (from dockerfile directory)
 - task: CmdLine@2
   displayName: 'Build Docker image for Django'
   inputs:
-    script: docker build -t django-student .
+    script: |
+      cd C:\Users\asmika\DevopsPract\Student_MGT\dockerfile
+      docker build -t django-student .
 
-# Step 3: Run Docker container
+# Step 4: Run Docker container
 - task: CmdLine@2
   displayName: 'Run Docker container now'
   inputs:
-    script: docker run -d -p 8000:8000 --name django-student-container django-student
+    script: docker run -d -p 8081:8000 --name django-student-container django-student
 
-# Step 4: List running Docker containers
+# Step 5: List running Docker containers
 - task: CmdLine@2
   displayName: 'List running Docker containers'
   inputs:
     script: docker ps
   condition: always()
 
-# Step 5: Wait for the Django application to be ready
+# Step 6: Wait for the Django application to be ready
 - task: CmdLine@2
   displayName: 'Check if Django application is ready'
   inputs:
     script: |
       echo Waiting for the Django application to be ready...
       for /l %%i in (1,1,10) do (
-        curl -s -o nul -w "%%{http_code}" http://localhost:8000/admin | findstr 200 >nul
-        if not errorlevel 1 (
+        curl -s -o nul -w "%%{http_code}" -L http://localhost:8081/admin
+        if %%errorlevel%% equ 0 (
           echo Server is up!
           exit /b 0
         )
         echo Retrying in 5 seconds...
         timeout /t 5 >nul
       )
+      echo Failed to connect to the server.
       exit /b 1
 
-# Step 6: Test the Django app
+# Step 7: Test the Django app with POST request
 - task: CmdLine@2
   displayName: 'Test Django application'
   inputs:
     script: |
-      curl -X POST http://localhost:8000/api/students/ ^
-        -H "Content-Type: application/json" ^
-        -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
+      curl -X POST http://localhost:8081/api/students/ -H "Content-Type: application/json" -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
 
-# Step 7: Stop and remove the Docker container
+# Step 8: Stop and remove the Docker container
 - task: CmdLine@2
   displayName: 'Stop and remove Django container'
   inputs:
