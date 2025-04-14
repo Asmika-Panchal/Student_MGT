@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
-from networkx import reverse
+from django.urls import reverse
+
 from student_management_project.studentmgt.models import Student
 
 
