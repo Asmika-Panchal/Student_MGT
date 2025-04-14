@@ -21,7 +21,7 @@ steps:
 - task: CmdLine@2
   displayName: 'Run Docker container now'
   inputs:
-    script: docker run -d -p 8000:8000 --name django-student-container django-student
+    script: docker run -d -p 8081:8000 --name django-student-container django-student
 
 # Step 5: List running Docker containers
 - task: CmdLine@2
