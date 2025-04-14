@@ -1,55 +1,62 @@
 trigger:
-  branches:
-    include:
-      - main  # Change if you're using a different branch
+- main
 
 pool:
-  vmImage: 'ubuntu-latest'
-
-variables:
-  dockerfilePath: 'Student_MGT/Student_MGT/student_management_project/dockerfile'
-  composePath: 'Student_MGT/Student_MGT/student_management_project/docker-compose.yml'
-  imageName: 'student-management-app'
+  name: Default
 
 steps:
+# Step 1: Checkout code from GitHub
+- checkout: self
+  displayName: 'Checkout code from GitHub'
 
-# Step 1: Checkout your repo
-- task: Checkout@1
-
-# Step 2: Set up Docker
-- task: DockerInstaller@0
-  displayName: 'Install Docker if not present'
-
-# Step 3: Build the Docker image using Dockerfile
-- task: Docker@2
-  displayName: 'Build Docker Image'
+# Step 2: Build Docker image for Django
+- task: CmdLine@2
+  displayName: 'Build Docker image for Django'
   inputs:
-    command: build
-    dockerfile: '$(dockerfilePath)'
-    repository: '$(imageName)'
-    tags: |
-      latest
-    buildContext: 'Student_MGT/Student_MGT/student_management_project'
+    script: docker build -t django-student .
 
-# Step 4: Run with Docker Compose
-- script: |
-    docker-compose -f $(composePath) up -d --build
-  displayName: 'Run Docker Compose'
+# Step 3: Run Docker container
+- task: CmdLine@2
+  displayName: 'Run Docker container now'
+  inputs:
+    script: docker run -d -p 8000:8000 --name django-student-container django-student
 
-# Step 5: Wait for container to be ready
-- script: sleep 10
-  displayName: 'Wait for app to start'
+# Step 4: List running Docker containers
+- task: CmdLine@2
+  displayName: 'List running Docker containers'
+  inputs:
+    script: docker ps
+  condition: always()
 
-# Step 6: Check if Django container is running
-- script: docker ps -a
-  displayName: 'List Running Containers'
+# Step 5: Wait for the Django application to be ready
+- task: CmdLine@2
+  displayName: 'Check if Django application is ready'
+  inputs:
+    script: |
+      echo Waiting for the Django application to be ready...
+      for /l %%i in (1,1,10) do (
+        curl -s -o nul -w "%%{http_code}" http://localhost:8000/admin | findstr 200 >nul
+        if not errorlevel 1 (
+          echo Server is up!
+          exit /b 0
+        )
+        echo Retrying in 5 seconds...
+        timeout /t 5 >nul
+      )
+      exit /b 1
 
-# Step 7: Run Django system check (optional)
-- script: |
-    CONTAINER_ID=$(docker ps -q -f "ancestor=$(imageName):latest")
-    if [ -n "$CONTAINER_ID" ]; then
-      docker exec $CONTAINER_ID python manage.py check
-    else
-      echo "No running container found with image name $(imageName):latest"
-    fi
-  displayName: 'Run Django System Check'
+# Step 6: Test the Django app
+- task: CmdLine@2
+  displayName: 'Test Django application'
+  inputs:
+    script: |
+      curl -X POST http://localhost:8000/api/students/ ^
+        -H "Content-Type: application/json" ^
+        -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
+
+# Step 7: Stop and remove the Docker container
+- task: CmdLine@2
+  displayName: 'Stop and remove Django container'
+  inputs:
+    script: docker stop django-student-container && docker rm django-student-container
+  condition: always()
