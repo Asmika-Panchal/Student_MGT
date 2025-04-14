@@ -9,7 +9,8 @@ from django.test import Client
 class StudentViewsTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.course = Course.objects.create(name="IT")
+        # Corrected the way Course is created based on the updated model
+        self.course = Course.objects.create(c_id="C101", cname="IT", cduration=3)
 
     def test_add_student_valid(self):
         response = self.client.post(reverse('add_student'), {
@@ -24,8 +25,7 @@ class StudentViewsTest(TestCase):
             'address': 'Mumbai',
             'batch_mon': 'June',
             'batch_year': 2023,
-            'courses': [self.course.id],  # For ManyToMany
+            'courses': [self.course.c_id],  # Correctly passing the course ID for ManyToMany
         })
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Student.objects.count(), 1)
-

@@ -4,10 +4,10 @@ from studentmgt.models import Student
 from coursemgt.models import Course
 from django.test import TestCase
 
-
 class StudentModelTest(TestCase):
     def setUp(self):
-        self.course = Course.objects.create(name='IT')  # Assuming Course model has a 'name' field
+        # Corrected the way Course is created based on the updated model
+        self.course = Course.objects.create(c_id="C101", cname="IT", cduration=3)
 
     def test_create_student(self):
         student = Student.objects.create(
@@ -23,6 +23,6 @@ class StudentModelTest(TestCase):
             batch_mon="June",
             batch_year=2023
         )
-        student.courses.set([self.course])
+        student.courses.set([self.course])  # Correctly linking the course
         self.assertEqual(student.fname, "Amey")
         self.assertEqual(student.courses.count(), 1)
