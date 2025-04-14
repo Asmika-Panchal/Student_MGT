@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         VENV_DIR = 'venv'
+        PYTHON = 'C:\\Users\\Amey S G\\AppData\\Local\\Programs\\Python\\Python311\\python.exe'
     }
 
     stages {
@@ -14,15 +15,15 @@ pipeline {
 
         stage('Set up Python Environment') {
             steps {
-                bat 'python -m venv %VENV_DIR%'
-                bat '%VENV_DIR%\\Scripts\\activate.bat && python -m pip install --upgrade pip'
-                bat '%VENV_DIR%\\Scripts\\activate.bat && pip install -r requirements.txt'
+                bat '"%PYTHON%" -m venv %VENV_DIR%'
+                bat 'call %VENV_DIR%\\Scripts\\activate.bat && "%PYTHON%" -m pip install --upgrade pip'
+                bat 'call %VENV_DIR%\\Scripts\\activate.bat && pip install -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat '%VENV_DIR%\\Scripts\\activate.bat && python manage.py test --verbosity=2'
+                bat 'call %VENV_DIR%\\Scripts\\activate.bat && "%PYTHON%" manage.py test --verbosity=2'
             }
         }
     }
