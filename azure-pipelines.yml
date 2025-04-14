@@ -9,7 +9,21 @@ steps:
 - checkout: self
   displayName: 'Checkout code from GitHub'
 
-# Step 3: Build Docker image for Django (from dockerfile directory)
+# Step 2: Clean up any existing Django container
+- task: CmdLine@2
+  displayName: 'Clean up existing Django container (if any)'
+  inputs:
+    script: |
+      docker rm -f django-student-container || echo "No existing container to remove"
+
+# Step 3: Free up port 8081 if another process is using it
+- task: CmdLine@2
+  displayName: 'Free up port 8081 (if in use)'
+  inputs:
+    script: |
+      for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8081 ^| findstr LISTENING') do taskkill /F /PID %%a
+
+# Step 4: Build Docker image for Django (from dockerfile directory)
 - task: CmdLine@2
   displayName: 'Build Docker image for Django'
   inputs:
@@ -17,20 +31,20 @@ steps:
       cd C:\Users\asmika\DevopsPract\Student_MGT\dockerfile
       docker build -t django-student .
 
-# Step 4: Run Docker container
+# Step 5: Run Docker container
 - task: CmdLine@2
   displayName: 'Run Docker container now'
   inputs:
     script: docker run -d -p 8081:8000 --name django-student-container django-student
 
-# Step 5: List running Docker containers
+# Step 6: List running Docker containers
 - task: CmdLine@2
   displayName: 'List running Docker containers'
   inputs:
     script: docker ps
   condition: always()
 
-# Step 6: Wait for the Django application to be ready
+# Step 7: Wait for the Django application to be ready
 - task: CmdLine@2
   displayName: 'Check if Django application is ready'
   inputs:
@@ -48,7 +62,7 @@ steps:
       echo Failed to connect to the server.
       exit /b 1
 
-# Step 7: Test the Django app with POST request
+# Step 8: Test the Django app with POST request
 - task: CmdLine@2
   displayName: 'Test Django application'
   inputs:
@@ -57,7 +71,7 @@ steps:
         -H "Content-Type: application/json" ^
         -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
 
-# Step 8: Stop and remove the Docker container
+# Step 9: Stop and remove the Docker container
 - task: CmdLine@2
   displayName: 'Stop and remove Django container'
   inputs:
