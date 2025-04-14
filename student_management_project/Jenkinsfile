@@ -23,7 +23,13 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                bat 'call %VENV_DIR%\\Scripts\\activate.bat && "%PYTHON%" student_management_project\\manage.py test --verbosity=2'
+                bat """
+    call venv\\Scripts\\activate.bat
+    cd student_management_project
+    python manage.py test --verbosity=2
+"""
+
+                
             }
         }
     }

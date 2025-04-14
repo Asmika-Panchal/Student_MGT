@@ -1,6 +1,9 @@
-from django.test import TestCase, Client
-from django.urls import reverse
-from student_app.models import Student
+from test import TestCase, Client
+from networkx import reverse
+
+
+from student_management_project.studentmgt.models import Student
+
 
 class StudentViewsTest(TestCase):
     def setUp(self):
