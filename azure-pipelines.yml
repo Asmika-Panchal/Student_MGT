@@ -9,14 +9,6 @@ steps:
 - checkout: self
   displayName: 'Checkout code from GitHub'
 
-# Step 2: Clean up any existing container (if any)
-- task: CmdLine@2
-  displayName: 'Clean up existing Django container (if any)'
-  inputs:
-    script: |
-      docker stop django-student-container || echo "No running container to stop"
-      docker rm django-student-container || echo "No container to remove"
-
 # Step 3: Build Docker image for Django (from dockerfile directory)
 - task: CmdLine@2
   displayName: 'Build Docker image for Django'
