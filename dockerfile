@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.11.5
 
 # Set the working directory
 WORKDIR /app
@@ -13,7 +13,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /app/
 
 # Expose the port your Django app runs on
-EXPOSE 8000
+EXPOSE 8081
 
 # Command to run the Django app
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
