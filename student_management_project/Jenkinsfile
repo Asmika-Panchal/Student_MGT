@@ -14,15 +14,15 @@ pipeline {
 
         stage('Set up Python Environment') {
             steps {
-                sh 'python3 -m venv $VENV_DIR'
-                sh '. $VENV_DIR/bin/activate && pip install --upgrade pip'
-                sh '. $VENV_DIR/bin/activate && pip install -r requirements.txt'
+                bat 'python -m venv %VENV_DIR%'
+                bat '%VENV_DIR%\\Scripts\\activate.bat && python -m pip install --upgrade pip'
+                bat '%VENV_DIR%\\Scripts\\activate.bat && pip install -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh '. $VENV_DIR/bin/activate && python manage.py test --verbosity=2'
+                bat '%VENV_DIR%\\Scripts\\activate.bat && python manage.py test --verbosity=2'
             }
         }
     }
