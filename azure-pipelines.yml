@@ -37,8 +37,8 @@ steps:
     script: |
       echo Waiting for the Django application to be ready...
       for /l %%i in (1,1,10) do (
-        curl -s -o nul -w "%%{http_code}" http://localhost:8081/admin | findstr 200 >nul
-        if not errorlevel 1 (
+        curl -s -o nul -w "%%{http_code}" http://localhost:8081/admin
+        if %%errorlevel%% equ 0 (
           echo Server is up!
           exit /b 0
         )
