@@ -17,13 +17,13 @@ pipeline {
             steps {
                 bat '"%PYTHON%" -m venv %VENV_DIR%'
                 bat 'call %VENV_DIR%\\Scripts\\activate.bat && "%PYTHON%" -m pip install --upgrade pip'
-                bat 'call %VENV_DIR%\\Scripts\\activate.bat && pip install -r requirements.txt'
+                bat 'call %VENV_DIR%\\Scripts\\activate.bat && pip install -r student_management_project\\requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'call %VENV_DIR%\\Scripts\\activate.bat && "%PYTHON%" manage.py test --verbosity=2'
+                bat 'call %VENV_DIR%\\Scripts\\activate.bat && "%PYTHON%" student_management_project\\manage.py test --verbosity=2'
             }
         }
     }
