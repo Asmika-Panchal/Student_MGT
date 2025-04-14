@@ -13,7 +13,9 @@ steps:
 - task: CmdLine@2
   displayName: 'Build Docker image for Django'
   inputs:
-    script: docker build -t django-student .
+    script: |
+      cd dockerfile
+      docker build -t django-student .
 
 # Step 3: Run Docker container
 - task: CmdLine@2
