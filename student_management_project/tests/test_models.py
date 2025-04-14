@@ -1,4 +1,4 @@
-from test import TestCase
+from django.test import TestCase
 
 from student_management_project.studentmgt.models import Student
 
