@@ -9,28 +9,36 @@ steps:
 - checkout: self
   displayName: 'Checkout code from GitHub'
 
-# Step 2: Build Docker image for Django
+# Step 2: Clean up any existing container (if any)
+- task: CmdLine@2
+  displayName: 'Clean up existing Django container (if any)'
+  inputs:
+    script: |
+      docker stop django-student-container || echo "No running container to stop"
+      docker rm django-student-container || echo "No container to remove"
+
+# Step 3: Build Docker image for Django (from dockerfile directory)
 - task: CmdLine@2
   displayName: 'Build Docker image for Django'
   inputs:
     script: |
-      cd dockerfile
+      cd C:\Users\asmika\DevopsPract\Student_MGT\dockerfile
       docker build -t django-student .
 
-# Step 3: Run Docker container
+# Step 4: Run Docker container
 - task: CmdLine@2
   displayName: 'Run Docker container now'
   inputs:
     script: docker run -d -p 8000:8000 --name django-student-container django-student
 
-# Step 4: List running Docker containers
+# Step 5: List running Docker containers
 - task: CmdLine@2
   displayName: 'List running Docker containers'
   inputs:
     script: docker ps
   condition: always()
 
-# Step 5: Wait for the Django application to be ready
+# Step 6: Wait for the Django application to be ready
 - task: CmdLine@2
   displayName: 'Check if Django application is ready'
   inputs:
@@ -45,9 +53,10 @@ steps:
         echo Retrying in 5 seconds...
         timeout /t 5 >nul
       )
+      echo Failed to connect to the server.
       exit /b 1
 
-# Step 6: Test the Django app
+# Step 7: Test the Django app with POST request
 - task: CmdLine@2
   displayName: 'Test Django application'
   inputs:
@@ -56,7 +65,7 @@ steps:
         -H "Content-Type: application/json" ^
         -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
 
-# Step 7: Stop and remove the Docker container
+# Step 8: Stop and remove the Docker container
 - task: CmdLine@2
   displayName: 'Stop and remove Django container'
   inputs:
