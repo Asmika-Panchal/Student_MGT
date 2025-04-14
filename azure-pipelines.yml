@@ -37,15 +37,13 @@ steps:
     script: |
       echo Waiting for the Django application to be ready...
       for /l %%i in (1,1,10) do (
-        response=$(curl -s -w "%{http_code}" http://localhost:8081/admin)
-        http_code=$(echo "$response" | tail -n 1)
-        echo "HTTP Status Code: $http_code"
-        if "$http_code" == "200" (
+        curl -s -o nul -w "%%{http_code}" http://localhost:8081/admin | findstr 200 >nul
+        if not errorlevel 1 (
           echo Server is up!
           exit /b 0
         )
         echo Retrying in 5 seconds...
-        timeout /t 5
+        timeout /t 5 >nul
       )
       echo Failed to connect to the server.
       exit /b 1
@@ -55,7 +53,9 @@ steps:
   displayName: 'Test Django application'
   inputs:
     script: |
-      curl -X POST http://localhost:8081/api/students/ -H "Content-Type: application/json" -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
+      curl -X POST http://localhost:8081/api/students/ ^
+        -H "Content-Type: application/json" ^
+        -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
 
 # Step 8: Stop and remove the Docker container
 - task: CmdLine@2
