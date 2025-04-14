@@ -13,7 +13,7 @@ class StudentViewsTest(TestCase):
         self.course = Course.objects.create(c_id="C101", cname="IT", cduration=3)
 
     def test_add_student_valid(self):
-        response = self.client.post(reverse('add_student'), {
+        response = self.client.post(reverse('student_add'), {
             'fname': 'Amey',
             'lname': 'Gaikwad',
             'dob': '2000-01-01',
