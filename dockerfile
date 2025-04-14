@@ -13,7 +13,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /app/
 
 # Expose the port your Django app runs on
-EXPOSE 8081
+EXPOSE 8000
 
 # Command to run the Django app
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
