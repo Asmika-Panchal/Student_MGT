@@ -36,16 +36,20 @@ steps:
   inputs:
     script: |
       echo Waiting for the Django application to be ready...
-      for /l %%i in (1,1,10) do (
-        curl -s -o nul -w "%%{http_code}" http://localhost:8082/admin
-        if %%errorlevel%% equ 0 (
-          echo Server is up!
+      setlocal ENABLEDELAYEDEXPANSION
+      for /L %%i in (1,1,10) do (
+        echo Attempt %%i: Checking if the server is up...
+        for /f "tokens=* usebackq" %%A in (`curl -s -o nul -w "%%{http_code}" http://localhost:8082/admin`) do (
+          set "code=%%A"
+        )
+        if "!code!"=="200" (
+          echo Server is up with HTTP code !code!
           exit /b 0
         )
-        echo Retrying in 5 seconds...
+        echo Server not ready yet (HTTP code: !code!), retrying in 5 seconds...
         timeout /t 5 >nul
       )
-      echo Failed to connect to the server.
+      echo Failed to connect to the server after multiple attempts.
       exit /b 1
 
 # Step 7: Test the Django app with POST request
