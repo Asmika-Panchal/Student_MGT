@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from student_management_project.studentmgt.models import Student
+from studentmgt.models import Student
+
 
 
 class StudentModelTest(TestCase):

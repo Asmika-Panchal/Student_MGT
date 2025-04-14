@@ -17,7 +17,7 @@ pipeline {
             steps {
                 bat '"%PYTHON%" -m venv %VENV_DIR%'
                 bat 'call %VENV_DIR%\\Scripts\\activate.bat && "%PYTHON%" -m pip install --upgrade pip'
-                bat 'call %VENV_DIR%\\Scripts\\activate.bat && pip install -r student_management_project\\requirements.txt'
+                bat 'call %VENV_DIR%\\Scripts\\activate.bat && pip install -r requirements.txt'
             }
         }
 
@@ -25,7 +25,6 @@ pipeline {
             steps {
                 bat """
     call venv\\Scripts\\activate.bat
-    cd student_management_project
     python manage.py test --verbosity=2
 """
 

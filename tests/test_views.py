@@ -1,7 +1,8 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from student_management_project.studentmgt.models import Student
+from studentmgt.models import Student
+
 
 
 class StudentViewsTest(TestCase):
