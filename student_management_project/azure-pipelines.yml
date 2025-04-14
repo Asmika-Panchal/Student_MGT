@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  name: Default
+  vmImage: 'ubuntu-latest'
 
 steps:
 # Step 1: Checkout code from GitHub
