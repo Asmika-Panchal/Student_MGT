@@ -1,22 +1,19 @@
-# Use official Python image
-FROM python:3.10-slim
+FROM python:3.9
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-# Set work directory
+# Set the working directory
 WORKDIR /app
 
-# Install dependencies
+# Copy the requirements file into the container
 COPY requirements.txt /app/
+
+# Upgrade pip and install dependencies
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy project
+# Copy the rest of the project files
 COPY . /app/
 
-# Expose port
+# Expose the port your Django app runs on
 EXPOSE 8000
 
-# Run the Django app
+# Command to run the Django app
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
