@@ -1,3 +1,4 @@
+# tests/test_models.py
 from django.test import TestCase
 
 from studentmgt.models import Student

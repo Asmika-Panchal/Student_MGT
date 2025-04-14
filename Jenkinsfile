@@ -7,9 +7,11 @@ pipeline {
     }
 
     stages {
+
         stage('Clone Repository') {
             steps {
-                echo "Code cloned from GitHub automatically."
+                echo "Cloning code from GitHub..."
+                checkout scm
             }
         }
 
@@ -18,17 +20,25 @@ pipeline {
                 bat '"%PYTHON%" -m venv %VENV_DIR%'
                 bat 'call %VENV_DIR%\\Scripts\\activate.bat && "%PYTHON%" -m pip install --upgrade pip'
                 bat 'call %VENV_DIR%\\Scripts\\activate.bat && pip install -r requirements.txt'
+                bat 'call %VENV_DIR%\\Scripts\\activate.bat && pip freeze'
+            }
+        }
+
+        stage('Apply Migrations') {
+            steps {
+                bat """
+                    call %VENV_DIR%\\Scripts\\activate.bat
+                    python manage.py migrate
+                """
             }
         }
 
         stage('Run Tests') {
             steps {
                 bat """
-    call venv\\Scripts\\activate.bat
-    python manage.py test --verbosity=2
-"""
-
-                
+                    call %VENV_DIR%\\Scripts\\activate.bat
+                    python manage.py test --verbosity=2
+                """
             }
         }
     }
