@@ -62,8 +62,8 @@ steps:
         -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
 
 # Step 8: Stop and remove the Docker container
-- task: CmdLine@2
-  displayName: 'Stop and remove Django container'
-  inputs:
-    script: docker stop django-student-container && docker rm django-student-container
-  condition: always()
+# - task: CmdLine@2
+#   displayName: 'Stop and remove Django container'
+#   inputs:
+#     script: docker stop django-student-container && docker rm django-student-container
+#   condition: always()
