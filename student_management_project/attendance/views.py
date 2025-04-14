@@ -1,7 +1,7 @@
 import csv
 from io import BytesIO
 import os
-from turtle import pd
+import pandas as pd
 from django.shortcuts import redirect, render, HttpResponse
 from django.utils import timezone
 from matplotlib import pyplot as plt

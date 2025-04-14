@@ -1,0 +1,55 @@
+trigger:
+  branches:
+    include:
+      - main  # Change if you're using a different branch
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  dockerfilePath: 'Student_MGT/Student_MGT/student_management_project/dockerfile'
+  composePath: 'Student_MGT/Student_MGT/student_management_project/docker-compose.yml'
+  imageName: 'student-management-app'
+
+steps:
+
+# Step 1: Checkout your repo
+- task: Checkout@1
+
+# Step 2: Set up Docker
+- task: DockerInstaller@0
+  displayName: 'Install Docker if not present'
+
+# Step 3: Build the Docker image using Dockerfile
+- task: Docker@2
+  displayName: 'Build Docker Image'
+  inputs:
+    command: build
+    dockerfile: '$(dockerfilePath)'
+    repository: '$(imageName)'
+    tags: |
+      latest
+    buildContext: 'Student_MGT/Student_MGT/student_management_project'
+
+# Step 4: Run with Docker Compose
+- script: |
+    docker-compose -f $(composePath) up -d --build
+  displayName: 'Run Docker Compose'
+
+# Step 5: Wait for container to be ready
+- script: sleep 10
+  displayName: 'Wait for app to start'
+
+# Step 6: Check if Django container is running
+- script: docker ps -a
+  displayName: 'List Running Containers'
+
+# Step 7: Run Django system check (optional)
+- script: |
+    CONTAINER_ID=$(docker ps -q -f "ancestor=$(imageName):latest")
+    if [ -n "$CONTAINER_ID" ]; then
+      docker exec $CONTAINER_ID python manage.py check
+    else
+      echo "No running container found with image name $(imageName):latest"
+    fi
+  displayName: 'Run Django System Check'
