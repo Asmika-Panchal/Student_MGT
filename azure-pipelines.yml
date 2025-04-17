@@ -61,10 +61,10 @@ steps:
   displayName: 'Test Django application'
   inputs:
     script: |
-      curl -X POST http://localhost:8082/api/students/ ^
+      curl -X POST http://localhost:8000/api/students/ ^
         -H "Content-Type: application/json" ^
         -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
-        
+
 # Step 7: Tear down the containers (optional)
 # - task: CmdLine@2
 #   displayName: 'Stop and remove containers'
