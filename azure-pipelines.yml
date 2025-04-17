@@ -61,9 +61,8 @@ steps:
   displayName: 'Test Django application'
   inputs:
     script: |
-      curl -X POST http://localhost:8000/api/students/ ^
-        -H "Content-Type: application/json" ^
-        -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
+      cd $(Build.SourcesDirectory)/Student_MGT/Student_MGT/student_management_project
+      docker exec django_studentapp python manage.py test --verbosity=2
 
 # Step 7: Tear down the containers (optional)
 # - task: CmdLine@2
