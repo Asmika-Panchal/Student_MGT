@@ -33,7 +33,7 @@ pipeline {
             }
         }
 
-        stage('Run All Tests') {
+        stage('Run Database Tests') {
             steps {
                 bat """
                     call %VENV_DIR%\\Scripts\\activate.bat
@@ -46,10 +46,11 @@ pipeline {
             steps {
                 bat """
                     call %VENV_DIR%\\Scripts\\activate.bat
-                    python manage.py test student.tests.test_navigation.NavigationTestCase --verbosity=2
+                    python manage.py test tests.test_navigation.NavigationTestCase --verbosity=2
                 """
-            }
-        }
+    }
+}
+
     }
 
     post {
