@@ -1,0 +1,72 @@
+trigger:
+- main
+
+pool:
+  name: Default  
+
+steps:
+# Step 1: Checkout code from GitHub
+- checkout: self
+  displayName: 'Checkout code from GitHub'
+
+# Step 2: Install Docker Compose (if using Microsoft-hosted agents)
+# You can skip this step if using self-hosted agents with Docker preinstalled
+# - script: |
+#     sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#     sudo chmod +x /usr/local/bin/docker-compose
+#     docker-compose version
+#   displayName: 'Install Docker Compose'
+
+# Step 3: Build and run with Docker Compose
+- task: CmdLine@2
+  displayName: 'Run Docker Compose'
+  inputs:
+    script: |
+      cd C:\Users\asmika\DevopsPract\Student_MGT\Student_MGT\student_management_project
+      docker-compose up -d --build
+
+# Step 4: Wait for the Django application to be ready
+# - task: CmdLine@2
+#   displayName: 'Wait for Django app to be ready'
+#   inputs:
+#     script: |
+#       echo Waiting for the Django application to be ready...
+#       for /l %%x in (1, 1, 5) do (
+#         echo Attempt %%x...
+#         curl -s http://localhost:8000/ > nul
+#         IF !ERRORLEVEL! EQU 0 (
+#           echo Django app is running.
+#           exit /b 0
+#         )
+#         timeout /t 5
+#       )
+#       echo Django app did not start in time.
+#       exit /b 1
+
+# Step 5: List running containers
+- task: CmdLine@2
+  displayName: 'List Running Containers'
+  inputs:
+    script: docker ps
+
+# Step 6: Run Django system check (optional)
+- task: CmdLine@2
+  displayName: 'Run Django system check'
+  inputs:
+    script: docker exec django_studentapp python manage.py check
+
+
+# Step 7: Test the Django app with POST request
+- task: CmdLine@2
+  displayName: 'Test Django application'
+  inputs:
+    script: |
+      cd $(Build.SourcesDirectory)/Student_MGT/Student_MGT/student_management_project
+      docker exec django_studentapp python manage.py test --verbosity=2
+
+# Step 7: Tear down the containers (optional)
+# - task: CmdLine@2
+#   displayName: 'Stop and remove containers'
+#   inputs:
+#     script: docker-compose down
+#   condition: always()

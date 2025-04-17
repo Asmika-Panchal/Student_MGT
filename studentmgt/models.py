@@ -1,3 +1,4 @@
+# studentmgt/models.py
 from django.db import models
 
 from coursemgt.models import Course
