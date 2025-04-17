@@ -1,1 +1,1 @@
-#to recognize python files in this directory as a package
+# to recognize this directory as a package
