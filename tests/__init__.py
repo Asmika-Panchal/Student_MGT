@@ -1,1 +1,1 @@
-# Leave this empty. It's needed to treat this folder as a package.
+# to recognize this directory as a package
