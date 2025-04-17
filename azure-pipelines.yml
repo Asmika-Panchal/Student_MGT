@@ -26,22 +26,22 @@ steps:
       docker-compose up -d --build
 
 # Step 4: Wait for the Django application to be ready
-- task: CmdLine@2
-  displayName: 'Wait for Django app to be ready'
-  inputs:
-    script: |
-      echo Waiting for the Django application to be ready...
-      for /l %%x in (1, 1, 5) do (
-        echo Attempt %%x...
-        curl -s http://localhost:8000/ > nul
-        IF !ERRORLEVEL! EQU 0 (
-          echo Django app is running.
-          exit /b 0
-        )
-        timeout /t 5
-      )
-      echo Django app did not start in time.
-      exit /b 1
+# - task: CmdLine@2
+#   displayName: 'Wait for Django app to be ready'
+#   inputs:
+#     script: |
+#       echo Waiting for the Django application to be ready...
+#       for /l %%x in (1, 1, 5) do (
+#         echo Attempt %%x...
+#         curl -s http://localhost:8000/ > nul
+#         IF !ERRORLEVEL! EQU 0 (
+#           echo Django app is running.
+#           exit /b 0
+#         )
+#         timeout /t 5
+#       )
+#       echo Django app did not start in time.
+#       exit /b 1
 
 # Step 5: List running containers
 - task: CmdLine@2
@@ -55,6 +55,16 @@ steps:
   inputs:
     script: docker exec django_studentapp python manage.py check
 
+
+# Step 7: Test the Django app with POST request
+- task: CmdLine@2
+  displayName: 'Test Django application'
+  inputs:
+    script: |
+      curl -X POST http://localhost:8082/api/students/ ^
+        -H "Content-Type: application/json" ^
+        -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
+        
 # Step 7: Tear down the containers (optional)
 # - task: CmdLine@2
 #   displayName: 'Stop and remove containers'
