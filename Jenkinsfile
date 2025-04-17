@@ -33,11 +33,20 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+        stage('Run All Tests') {
             steps {
                 bat """
                     call %VENV_DIR%\\Scripts\\activate.bat
                     python manage.py test --verbosity=2
+                """
+            }
+        }
+
+        stage('Run Navigation Test') {
+            steps {
+                bat """
+                    call %VENV_DIR%\\Scripts\\activate.bat
+                    python manage.py test student.tests.test_navigation.NavigationTestCase --verbosity=2
                 """
             }
         }
