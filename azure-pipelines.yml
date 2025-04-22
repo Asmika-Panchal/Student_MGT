@@ -70,3 +70,10 @@ steps:
 #   inputs:
 #     script: docker-compose down
 #   condition: always()
+
+- task: AzureWebAppContainer@1
+  displayName: 'Deploy to Azure Web App'
+  inputs:
+    azureSubscription: 'azure-connection'
+    appName: 'student-mgt-app'
+    containers: 'docker.io/asmikapanchal/student_mgt:latest'
