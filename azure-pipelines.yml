@@ -2,68 +2,71 @@ trigger:
 - main
 
 pool:
-  name: Default
+  name: Default  
 
 steps:
 # Step 1: Checkout code from GitHub
 - checkout: self
   displayName: 'Checkout code from GitHub'
 
-# Step 3: Build Docker image for Django (from dockerfile directory)
+# Step 2: Install Docker Compose (if using Microsoft-hosted agents)
+# You can skip this step if using self-hosted agents with Docker preinstalled
+# - script: |
+#     sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#     sudo chmod +x /usr/local/bin/docker-compose
+#     docker-compose version
+#   displayName: 'Install Docker Compose'
+
+# Step 3: Build and run with Docker Compose
 - task: CmdLine@2
-  displayName: 'Build Docker image for Django'
+  displayName: 'Run Docker Compose'
   inputs:
     script: |
-      cd C:\Users\asmika\DevopsPract\Student_MGT\dockerfile
-      docker build -t django-student .
+      cd C:\Users\asmika\DevopsPract\Student_MGT\Student_MGT\student_management_project
+      docker-compose up -d --build
 
-# Step 4: Run Docker container
-- task: CmdLine@2
-  displayName: 'Run Docker container now'
-  inputs:
-    script: docker run -d -p 8082:8000 --name django-student-container django-student
-
-# Step 5: List running Docker containers
-- task: CmdLine@2
-  displayName: 'List running Docker containers'
-  inputs:
-    script: docker ps
-  condition: always()
-
-# Step 6: Wait for the Django application to be ready
+# Step 4: Wait for the Django application to be ready
 # - task: CmdLine@2
-#   displayName: 'Check if Django application is ready'
+#   displayName: 'Wait for Django app to be ready'
 #   inputs:
 #     script: |
 #       echo Waiting for the Django application to be ready...
-#       setlocal ENABLEDELAYEDEXPANSION
-#       for /L %%i in (1,1,10) do (
-#         echo Attempt %%i: Checking if the server is up...
-#         for /f "tokens=* usebackq" %%A in (`curl -s -o nul -w "%%{http_code}" http://localhost:8082/admin`) do (
-#           set "code=%%A"
-#         )
-#         if "!code!"=="200" (
-#           echo Server is up with HTTP code !code!
+#       for /l %%x in (1, 1, 5) do (
+#         echo Attempt %%x...
+#         curl -s http://localhost:8000/ > nul
+#         IF !ERRORLEVEL! EQU 0 (
+#           echo Django app is running.
 #           exit /b 0
 #         )
-#         echo Server not ready yet (HTTP code: !code!), retrying in 5 seconds...
-#         timeout /t 5 >nul
+#         timeout /t 5
 #       )
-#       echo Failed to connect to the server after multiple attempts.
+#       echo Django app did not start in time.
 #       exit /b 1
+
+# Step 5: List running containers
+- task: CmdLine@2
+  displayName: 'List Running Containers'
+  inputs:
+    script: docker ps
+
+# Step 6: Run Django system check (optional)
+- task: CmdLine@2
+  displayName: 'Run Django system check'
+  inputs:
+    script: docker exec django_studentapp python manage.py check
+
 
 # Step 7: Test the Django app with POST request
 - task: CmdLine@2
   displayName: 'Test Django application'
   inputs:
     script: |
-      curl -X POST http://localhost:8082/api/students/ ^
-        -H "Content-Type: application/json" ^
-        -d "{\"name\": \"Test Student\", \"age\": 21, \"course\": \"Computer Science\"}"
+      cd $(Build.SourcesDirectory)/Student_MGT/Student_MGT/student_management_project
+      docker exec django_studentapp python manage.py test --verbosity=2
 
-# Step 8: Stop and remove the Docker container
+# Step 7: Tear down the containers (optional)
 # - task: CmdLine@2
-#   displayName: 'Stop and remove Django container'
+#   displayName: 'Stop and remove containers'
 #   inputs:
-#     script: docker stop django-student-container && docker rm django-student-container
+#     script: docker-compose down
 #   condition: always()
