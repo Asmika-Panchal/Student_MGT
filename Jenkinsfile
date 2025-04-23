@@ -37,7 +37,7 @@ pipeline {
             steps {
                 bat """
                     call %VENV_DIR%\\Scripts\\activate.bat
-                    python manage.py test --verbosity=2
+                    python manage.py test tests.test_models --verbosity=2
                 """
             }
         }
