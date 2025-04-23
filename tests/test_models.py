@@ -24,5 +24,5 @@ class StudentModelTest(TestCase):
             batch_year=2023
         )
         student.courses.set([self.course])  # Correctly linking the course
-        self.assertEqual(student.fname, "Amey")
-        self.assertEqual(student.courses.count(), 1)
+        self.assertEqual(student.fname, "Amey") #check if student craeted successfully with correct name
+        self.assertEqual(student.courses.count(), 1) #check if only 1 course is linked to student
