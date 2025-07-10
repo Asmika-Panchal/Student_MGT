@@ -7,7 +7,7 @@ The *Student Management System* is a comprehensive Django-based web application 
 
 ## 🧠 Features
 
-### ✅ Real-Time Attendance Tracking  
+### ✅ Real-Time Attendance Tracking: -
 Automatically marks student attendance as enter the classroom.
 
 ### 📊 Instant Test Reporting  
